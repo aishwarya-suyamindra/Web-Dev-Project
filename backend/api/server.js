@@ -1,6 +1,7 @@
 'use strict';
-
+const cors = require('cors');
 var express = require('express'),
+
   app = express(),
   port = process.env.PORT || 3000,
 
@@ -15,6 +16,12 @@ const option = {
     keepAlive: true,
     reconnectTries: 30000
 };
+
+app.use(cors({
+  origin: 'http://localhost:3001',
+  credentials: true
+}));
+
 
 const mongoURI = process.env.MONGODB_URI;
 mongoose.connect('mongodb://127.0.0.1:27017/webProject').then(function(){
