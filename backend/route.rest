@@ -1,7 +1,7 @@
-GET http://localhost:3000/youtubeAPIs/leetcode
+GET http://localhost:3000/youtubeAPIs/search/leetcode
 
 ###
 
-GET http://localhost:3000/
+GET http://localhost:3000/youtubeAPIs/trending
 
 ###
