@@ -2,10 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import { Button, Container, Row, Col } from 'react-bootstrap'; // Import Bootstrap components
+import '../stylesheets/HomePageComponent.css';
 
 const WelcomePage = () => {
   return (
-    <Container className="welcome-page">
+    <div className="welcome-page ">
       <Row className="justify-content-center align-items-center min-vh-100">
         <Col className="text-center">
           <h1>Welcome to Your Streaming Service</h1>
@@ -30,8 +31,10 @@ const WelcomePage = () => {
           </div>
         </Col>
       </Row>
-    </Container>
+    </div>
   );
 };
 
 export default WelcomePage;
+
+
