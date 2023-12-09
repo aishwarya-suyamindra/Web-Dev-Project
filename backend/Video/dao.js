@@ -19,7 +19,8 @@ const videoDAO = () => {
          * @param {*} id 
          */
         getVideoMetaData: async (id) => {
-            return await Video.findById(id)
+            const video = await Video.findById(id)
+            return video._doc
         },
 
         /**
@@ -32,12 +33,17 @@ const videoDAO = () => {
         },
 
         /**
-         * Returns the video for the given id.
+         * Returns the video files for the given id.
          * 
          * @param {*} id 
          */
-        getVideo: async (id) => {
-            return await database.gridFSBucket.find({ _id: id });
+        getVideoFiles: async (id) => {
+            const res = []
+            const cursor =  database.gridFSBucket.find({filename: id})
+            for await (const doc of cursor) {
+                res.push(doc)
+            }
+            return res
         },
 
         /**
@@ -52,7 +58,6 @@ const videoDAO = () => {
             return await Video.create({
                 title: data.title,
                 description: data.description,
-                durationInMilliseconds: 100, //TEST.
                 userId: userId,
                 mimeType: file.mimetype
             })
@@ -64,15 +69,24 @@ const videoDAO = () => {
          * @param {*} id 
          * @param {*} filePath 
          */
-        uploadVideo: async (id, file, filename) => {
+        uploadVideo: async (id, file) => {
             // upload the video to grid fs.
-            const metadata = { _id: id }
-            const videoUploadStream = await database.gridFSBucket.openUploadStream(filename, {
-                metadata: metadata
-            })
+            const videoUploadStream = await database.gridFSBucket.openUploadStream(id)
             await videoUploadStream.write(file.buffer)
             videoUploadStream.end()
-            return {'id': id, 'filename': filename}
+            return {'id': id}
+        },
+
+        downloadVideo: async(id, start, end) => {
+            const videoDownloadStream = await database.gridFSBucket.openDownloadStream(id, {
+                start: start,
+                end: end
+            })
+            videoDownloadStream.on('error', (error) => {
+                // Handle errors
+                console.error('Error downloading file:', error);
+              })
+            return videoDownloadStream
         }
     }
 

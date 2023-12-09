@@ -14,12 +14,10 @@ class Database {
         try {
             // connect to the database
             mongoose.connect(url)
-            console.log("Connected!")
             // gridfs
             this.gridFSBucket = new mongoose.mongo.GridFSBucket(mongoose.connection, {
                 bucketName: 'videos'
             })
-            console.log("GRIDFS!")
         } catch (error) {
             console.error('Error connecting to the database', error.message);
         }

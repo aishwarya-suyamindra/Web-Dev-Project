@@ -1,7 +1,6 @@
 import mongoose, { Mongoose } from "mongoose";
 import shortid from "shortid";
 
-
 /**
  * Schema for a video document.
  */
@@ -15,10 +14,6 @@ export const videoSchema = new mongoose.Schema({
         required: true,
     },
     description: String,
-    durationInMilliseconds: {
-        type: Number,
-        required: true
-    },
     // TODO: Refer to an existing user in the database.
     userId: {
         type: String,

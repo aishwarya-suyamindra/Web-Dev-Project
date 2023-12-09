@@ -11,6 +11,7 @@ app.use(express.json())
 const config = dotenv.config({path: 'backend/.env'})
 
 if (config.error) {
+    console.log(config.error)
 }
 
 const PORT = process.env.PORT
@@ -20,5 +21,5 @@ await db.connect(`${MONGO_URI}`)
 
 // Routes
 VideoRoutes(app)
-
-app.listen(process.env.PORT || 3000);
+console.log(process.env.PORT)
+app.listen(process.env.PORT);
