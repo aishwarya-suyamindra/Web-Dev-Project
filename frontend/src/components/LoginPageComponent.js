@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
+import { login } from '../Util/session';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch } from 'react-redux'
+import { setUserDetails, resetUser } from '../Util/LoginReducer.js'
+
 const Login = () => {
+  const BASE_REMOTE_URL = "http://localhost:3500"
   const [credentials, setCredentials] = useState({
     email: '',
     password: ''
 });
+
+const navigate = useNavigate();
+const dispatch = useDispatch();
 
   const handleChange = (e) => {
     // Implement your login logic here
@@ -16,16 +25,20 @@ const Login = () => {
 
   const handleLogin = async(e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:3000/auth/sign_in', credentials);
-      alert('Login Successful');
-      console.log(response);
-      // Navigate('/home');
-    } catch (error) {
-      alert('Login failed!');
+    await axios.post(`${BASE_REMOTE_URL}/auth/sign_in`, credentials)
+    .then(response => {
+      console.log("Logged in!")
+      const userData = { ...response.data }
+      console.log(userData)
+      login(userData)
+      dispatch(setUserDetails(userData))
+      navigate('/')
+    })
+    .catch(error => {
+      alert('Please register first!');
       console.log(error.response.data);
       console.log()
-    }
+    })
   }
 
 

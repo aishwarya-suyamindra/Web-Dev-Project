@@ -4,9 +4,12 @@ import HomePageComponent from './HomePageComponent';
 import RegitserPageComponent from './RegisterPageComponent';
 import LoginPageComponent from './LoginPageComponent';
 import VideoPlayer from './VideoPlayer';
+import store from '../Util/store';
+import { Provider } from 'react-redux';
 
 const VideoStreamApplication = () => {
   return (
+    <Provider store={store}>
     <HashRouter>
       <div>
         <Routes>
@@ -18,6 +21,7 @@ const VideoStreamApplication = () => {
         </Routes>
       </div>
     </HashRouter>
+    </Provider>
   );
 };
 
