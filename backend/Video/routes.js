@@ -6,15 +6,15 @@ function VideoRoutes(app) {
     /**
      * Upload a video.
      */
-    app.post("/upload", upload.single('video') ,async (req, res) => {
+    app.post("/upload", upload.single('video'), async (req, res) => {
         const file = req.file
         const data = JSON.parse(req.body.data);
-        await videoService.uploadVideo(file, data, "1234").then(video => 
+        await videoService.uploadVideo(file, data, "1234").then(video =>
             res.status(200).send(video)
         ).catch(error => {
             res.status(error.httpStatus).send(error.message)
         })
-    })   
+    })
 
     /**
      * Return a video based on the id.
@@ -32,8 +32,6 @@ function VideoRoutes(app) {
             res.status(400).send("Invalid range header.")
             return
         }
-
-        console.log("YO: ", rangeComponents)
         const start = Number(rangeComponents[0])
         const end = rangeComponents[1]
         await videoService.getVideo(videoId, start, end).then(data => {
@@ -47,6 +45,15 @@ function VideoRoutes(app) {
         }).catch(error => {
             res.status(error.httpStatus).send(error.message)
         })
+    })
+
+    app.get('/trending', async (req, res) => {
+        console.log("In here.")
+        await videoService.getTrendingVideos().then(data =>
+            res.status(200).send(data)
+            ).catch(error => {
+                res.status(error.httpStatus).send(error.message)
+            })
     })
 }
 

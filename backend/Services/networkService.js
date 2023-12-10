@@ -1,8 +1,7 @@
-import http from "http"
+import axios from "axios"
 
 const networkService = () => {
-    const BASE_URL = process.env.BASE_REMOTE_API_URL
-    const API_AUTH_TOKEN = process.env.API_AUTH_TOKEN
+
 
     const innerFunctions = {
         /**
@@ -11,31 +10,20 @@ const networkService = () => {
          * 
          * @param {String} path The request path
          * @param {Object} headers The http headers to add to the request
-         * @param {Boolean} authorise True by default, adds the bearer token for the remote api
+         * @param {Object} params The query parameters
          */
-        get: async (path, headers, authorise = true) => {
+        get: async (path, headers, params) => {
+            const BASE_URL = process.env.BASE_API_URL
             return new Promise((resolve, reject) => {
-                const url = BASE_URL + path
-                url.headers = {
-                    'Content-Type': 'application/json',
-                    ...headers,
-                    ...(authorise) ? { 'Authorization': 'Bearer ' + API_AUTH_TOKEN } : {}
-                }
-
-                const req = http.get(url, res => {
-                    var data
-                    res.on('data', chunk => {
-                        data += chunk
-                    })
-
-                    // entire data has been received
-                    res.on('end', () => {
-                        resolve(data, res.statusCode)
-                    })
-                })
-
-                req.on('error', error => {
-                    console.log("Http error:", error)
+                var url = BASE_URL + path
+                axios.get(url, {
+                    params: params,
+                    headers: headers
+                }).then((res) => {
+                    const data = res.data
+                    const statusCode = res.status
+                    resolve({data, statusCode})
+                }).catch((error) => {
                     reject(new Error('Request failed:' + error))
                 })
             })

@@ -1,5 +1,7 @@
 import { Video, Comment, Activity } from "./model.js"
 import database from "../database.js"
+import shortid from "shortid"
+import Readable from "stream"
 
 const videoDAO = () => {
     const innerFunctions = {
@@ -39,7 +41,7 @@ const videoDAO = () => {
          */
         getVideoFiles: async (id) => {
             const res = []
-            const cursor =  database.gridFSBucket.find({filename: id})
+            const cursor = database.gridFSBucket.find({ filename: id })
             for await (const doc of cursor) {
                 res.push(doc)
             }
@@ -56,6 +58,7 @@ const videoDAO = () => {
          */
         createVideoMetadata: async (file, data, userId) => {
             return await Video.create({
+                _id: shortid(),
                 title: data.title,
                 description: data.description,
                 userId: userId,
@@ -70,14 +73,19 @@ const videoDAO = () => {
          * @param {*} filePath 
          */
         uploadVideo: async (id, file) => {
-            // upload the video to grid fs.
-            const videoUploadStream = await database.gridFSBucket.openUploadStream(id)
-            await videoUploadStream.write(file.buffer)
-            videoUploadStream.end()
-            return {'id': id}
+            return new Promise(async (resolve, reject) => {
+                const videoUploadStream = await database.gridFSBucket.openUploadStream(id)
+                await videoUploadStream.write(file.buffer)
+                videoUploadStream.end()
+                videoUploadStream.on("finish", () => {
+                    console.log("donez.")
+                    resolve({ 'id': id })
+                })
+            })
+
         },
 
-        downloadVideo: async(id, start, end) => {
+        downloadVideo: async (id, start, end) => {
             const videoDownloadStream = await database.gridFSBucket.openDownloadStream(id, {
                 start: start,
                 end: end
@@ -85,7 +93,7 @@ const videoDAO = () => {
             videoDownloadStream.on('error', (error) => {
                 // Handle errors
                 console.error('Error downloading file:', error);
-              })
+            })
             return videoDownloadStream
         }
     }

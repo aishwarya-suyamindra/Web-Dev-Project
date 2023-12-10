@@ -1,13 +1,11 @@
 import mongoose, { Mongoose } from "mongoose";
-import shortid from "shortid";
 
 /**
  * Schema for a video document.
  */
 export const videoSchema = new mongoose.Schema({
     _id: {
-        type: String,
-        default: shortid()
+        type: String
     },
     title: {
         type: String,
