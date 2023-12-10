@@ -8,7 +8,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-const config = dotenv.config({path: '.env'})
+const config = dotenv.config({path: 'backend/.env'})
 
 if (config.error) {
     console.log(config.error)

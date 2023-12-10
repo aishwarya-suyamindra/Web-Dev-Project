@@ -3,6 +3,7 @@ import CustomHTTPError from "../Util/customError.js"
 import networkService from "../Services/networkService.js"
 import * as fs from 'fs'
 
+
 const videoService = () => {
     const innerFunctions = {
         /**
@@ -13,15 +14,13 @@ const videoService = () => {
          * @param {*} userId 
          */
         uploadVideo: async(file, data, userId) => {
-            return await videoDao.createVideoMetadata(file, data, userId).then(async (res) => {
-                return await videoDao.uploadVideo(res._id, file)
-                .then(video => video)
-                .catch(error => {
-                    throw new CustomHTTPError(error, 500)
-                }) 
-            }).catch(error => {
-                throw new CustomHTTPError(error, 404)
-            })
+            const res = await videoDao.createVideoMetadata(file, data, userId)
+            return await videoDao.uploadVideo(res._id, file).then((video) => {
+                console.log("Here.")
+                return video
+            }) .catch(error => {
+                throw new CustomHTTPError(error, 500)
+            }) 
         },
 
         /**
@@ -67,12 +66,49 @@ const videoService = () => {
                     }
                 })
                 .catch(error => {
-                    console.log("Error: ", error)
+                    throw new CustomHTTPError(error, 500)
                 })
             }
-        }
+        },
+
+        getTrendingVideos: async() => {
+            const params = {
+                part: 'snippet',
+                chart: 'mostPopular',
+                regionCode: 'US', 
+                maxResults: 15, 
+                key: process.env.API_KEY
+              }
+              const response = await networkService.get(`/search`, null, params)
+              .then(({data, statusCode}) => {
+                if (statusCode >= 200 && statusCode < 300) {
+                    const trendingVideos = data.items;
+                    const response = []
+                    trendingVideos.forEach((video) => {
+                        const videoId = video.id.videoId
+                        if (videoId) {
+                            var obj = {
+                                videoId: video.id.videoId,
+                                title: video.snippet.title,
+                                thumbnail: video.snippet.thumbnails.default
+                            }
+                            response.push(obj)
+                        }                        
+                    })
+                    console.log(response)
+                    return response
+                } else {
+                    console.log("Failed:", data, statusCode)
+                    throw new CustomHTTPError(data, statusCode)
+                }
+              })
+              .catch(error => {
+                throw new CustomHTTPError(error, 500)
+            })
+            return response
+
     }
-    
+}
     return innerFunctions
 }
 
