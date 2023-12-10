@@ -16,15 +16,15 @@ const WelcomePage = () => {
   const user = useSelector((state) => state.login.userDetails)
   const isSignedIn = useSelector((state) => state.session.authenticated)
 
-  // useEffect(() => {
-  //   axios.get(`${BASE_REMOTE_URL}/trending`)
-  //     .then(response => {
-  //       console.log(response.data)
-  //       setVideoData(response.data)
-  //     }
-  //     )
-  //     .catch(error => console.error('Error fetching video data:', error));
-  // }, []);
+  useEffect(() => {
+    axios.get(`${BASE_REMOTE_URL}/trending`)
+      .then(response => {
+        console.log(response.data)
+        setVideoData(response.data)
+      }
+      )
+      .catch(error => console.error('Error fetching video data:', error));
+  }, []);
 
   const [showModal, setShowModal] = useState(false);
   return (
