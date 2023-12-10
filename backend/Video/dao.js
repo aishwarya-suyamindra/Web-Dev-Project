@@ -1,7 +1,6 @@
 import { Video, Comment, Activity } from "./model.js"
 import database from "../database.js"
 import shortid from "shortid"
-import Readable from "stream"
 
 const videoDAO = () => {
     const innerFunctions = {

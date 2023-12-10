@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
+import { login, logout } from '../Util/session';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux'
+import { setUserDetails, resetUser } from '../Util/LoginReducer.js'
 
 const Register = () => {
+  const BASE_REMOTE_URL = "http://localhost:3500"
   const [fullName, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,28 +32,26 @@ const Register = () => {
         setPassword(value);
         break;
       default:
-        // Handle other cases if needed
+      // Handle other cases if needed
     }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
-    // Your registration logic here
-
-    try {
-      const response = await axios.post('http://localhost:3000/auth/register', {
+    await axios.post(`${BASE_REMOTE_URL}/auth/register`, {
       fullName: fullName,
       email: email,
       password: password,
-});
-
+    }).then(response => {
       console.log(response);
-      // navigate('/')
-    } catch (error) {
+      const userData = { ...response.data, name: fullName }
+      login(userData)
+      dispatch(setUserDetails(userData))
+      navigate('/')
+    }).catch(error => {
       alert('Registration failed: ' + error.response.data);
       console.log(error.response.data);
-    }
+    })
   };
 
   return (
