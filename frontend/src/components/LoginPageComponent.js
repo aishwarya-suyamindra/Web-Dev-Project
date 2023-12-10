@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-
+import axios from 'axios';
 const Login = () => {
   const [credentials, setCredentials] = useState({
     email: '',
     password: ''
 });
 
-  const handleChange = () => {
+  const handleChange = (e) => {
     // Implement your login logic here
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
     // console.log('Login clicked:', { email, password });
@@ -17,11 +17,14 @@ const Login = () => {
   const handleLogin = async(e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3000/auth/sign_in', {credentials});
+      const response = await axios.post('http://localhost:3000/auth/sign_in', credentials);
       alert('Login Successful');
+      console.log(response);
       // Navigate('/home');
     } catch (error) {
       alert('Login failed!');
+      console.log(error.response.data);
+      console.log()
     }
   }
 
@@ -39,8 +42,9 @@ const Login = () => {
           <input
             type="email"
             className="form-control"
+            name="email"
             id="email"
-            value={email}
+            value={credentials.email}
             onChange= {handleChange}
           />
         </div>
@@ -51,8 +55,9 @@ const Login = () => {
           <input
             type="password"
             className="form-control"
+            name="password"
             id="password"
-            value={password}
+            value={credentials.password}
             onChange= {handleChange}
           />
         </div>
@@ -65,3 +70,4 @@ const Login = () => {
 };
 
 export default Login;
+
