@@ -55,6 +55,14 @@ function VideoRoutes(app) {
                 res.status(error.httpStatus).send(error.message)
             })
     })
+    app.get('/searchBar/:searchKey', async (req, res) => {
+        console.log("In search.")
+        await videoService.getSearchVideos(req.params.searchKey).then(data =>
+            res.status(200).send(data)
+            ).catch(error => {
+                res.status(error.httpStatus).send(error.message)
+            })
+    })
 }
 
 export default VideoRoutes;

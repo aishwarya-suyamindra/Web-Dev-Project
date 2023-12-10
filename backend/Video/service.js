@@ -107,7 +107,42 @@ const videoService = () => {
             })
             return response
 
-    }
+    },
+    getSearchVideos: async(searchTerm) => {
+        const params = {
+            part: 'snippet',
+            q: searchTerm,
+            type: 'video',
+            key: process.env.API_KEY
+          }
+          const response = await networkService.get(`/search`, null, params)
+          .then(({data, statusCode}) => {
+            if (statusCode >= 200 && statusCode < 300) {
+                const videos = data.items;
+                const response = []
+                videos.forEach((video) => {
+                    const videoId = video.id.videoId
+                    if (videoId) {
+                        var obj = {
+                            videoId: video.id.videoId,
+                            title: video.snippet.title
+                        }
+                        response.push(obj)
+                    }                        
+                })
+                console.log(response)
+                return response
+            } else {
+                console.log("Failed:", data, statusCode)
+                throw new CustomHTTPError(data, statusCode)
+            }
+          })
+          .catch(error => {
+            throw new CustomHTTPError(error, 500)
+        })
+        return response
+
+}
 }
     return innerFunctions
 }

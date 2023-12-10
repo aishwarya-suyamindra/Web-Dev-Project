@@ -1,18 +1,28 @@
 import React, { useState } from 'react';
-import { Form, FormControl, Button, InputGroup } from 'react-bootstrap';
+import axios from 'axios';
+import { Form, FormControl, Button, InputGroup, ListGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
 const SearchBar = () => {
+  const BASE_REMOTE_URL = "http://localhost:3500" // move this to env.
   const [searchText, setSearchText] = useState('');
-
+  const [videoData, setVideoData] = useState([]);
   const handleSearch = () => {
     console.log('Searching for:', searchText);
      // Call the remote API with searchText
     //onSearch(searchText);
+    axios.get(`${BASE_REMOTE_URL}/searchBar/${searchText}`)
+      .then(response => {
+        console.log(response.data)
+        setVideoData(response.data)
+      }
+      )
+      .catch(error => console.error('Error fetching video data:', error));
   };
 
   return (
+    <div>
     <Form inline>
         <InputGroup>
         <FormControl
@@ -26,6 +36,16 @@ const SearchBar = () => {
       </Button>
         </InputGroup>
     </Form>
+    {videoData.length > 0 && (
+        <ListGroup>
+          {videoData.map(video => (
+            <ListGroup.Item key={video.videoId}>
+              {video.title}
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      )}
+    </div>
   );
 };
 
