@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const [fullName, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -37,10 +37,17 @@ const Register = () => {
     // Your registration logic here
 
     try {
-      await axios.post('http://localhost:3000/auth/register', { fullName, email, password });
+      const response = await axios.post('http://localhost:3000/auth/register', {
+      fullName: fullName,
+      email: email,
+      password: password,
+});
+
+      console.log(response);
       // navigate('/')
     } catch (error) {
       alert('Registration failed: ' + error.response.data);
+      console.log(error.response.data);
     }
   };
 
