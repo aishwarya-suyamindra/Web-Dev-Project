@@ -3,6 +3,7 @@ import { User } from '../User/model.js';
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs"
 
+const secret =  process.env.TOKEN_SECRET || "API"
 export const register = function(req, res) {
   console.log("Request Body:", req.body);
   var newUser = new User(req.body);
@@ -10,7 +11,7 @@ export const register = function(req, res) {
   newUser.save()
   .then(user => {
     user.hash_password = undefined;
-    const token = jwt.sign({ email: user.email, fullName: user.fullName, _id: user._id }, 'RESTFULAPIs', { expiresIn: '1h' }); // Set token expiration to 1 hour
+    const token = jwt.sign({ email: user.email, fullName: user.fullName, _id: user._id }, secret, { expiresIn: '1h' }); // Set token expiration to 1 hour
 
       return res.json({ token });
   })
@@ -29,7 +30,7 @@ export const sign_in = function(req, res) {
       if (!user || !user.comparePassword(req.body.password)) {
         return res.status(401).json({ message: 'Authentication failed. Invalid user or password.' });
       }
-      return res.json({ token: jwt.sign({ email: user.email, fullName: user.fullName, _id: user._id }, 'RESTFULAPIs', { expiresIn: '2h' }),
+      return res.json({ token: jwt.sign({ email: user.email, fullName: user.fullName, _id: user._id }, secret, { expiresIn: '2h' }),
                         name: user.fullName });
     })
     .catch(function(err) {

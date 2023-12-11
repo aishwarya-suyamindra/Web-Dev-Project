@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux'
 import { setUserDetails, resetUser } from '../Util/LoginReducer.js'
 
 const Login = () => {
-  const BASE_REMOTE_URL = "http://localhost:3500"
+  const BASE_REMOTE_URL =  process.env.REACT_APP_API_BASE || "http://localhost:3500"
   const [credentials, setCredentials] = useState({
     email: '',
     password: ''
