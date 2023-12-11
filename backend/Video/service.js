@@ -131,7 +131,6 @@ const videoService = () => {
                     }                        
                 })
                 console.log(response)
-                return response
             } else {
                 console.log("Failed:", data, statusCode)
                 throw new CustomHTTPError(data, statusCode)
