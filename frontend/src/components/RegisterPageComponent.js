@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux'
 import { setUserDetails, resetUser } from '../Util/LoginReducer.js'
 
 const Register = () => {
-  const BASE_REMOTE_URL = "http://localhost:3500"
+  const BASE_REMOTE_URL =  process.env.REACT_APP_API_BASE || "http://localhost:3500"
   const [fullName, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

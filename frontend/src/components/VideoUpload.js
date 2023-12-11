@@ -3,10 +3,13 @@ import { useDropzone } from 'react-dropzone';
 import { Modal } from 'react-bootstrap';
 import { Button, Form } from 'react-bootstrap';
 import axios from 'axios';
+import { logout } from '../Util/session';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from "react-redux";
 
 const VideoUpload = ({ show, onHide }) => {
-    const BASE_REMOTE_URL = "http://localhost:3500" 
+    const BASE_REMOTE_URL =  process.env.REACT_APP_API_BASE || "http://localhost:3500"
+    const user = useSelector((state) => state.login.userDetails)
     const [file, setFile] = useState(null);
     const [videoDetails, setVideoDetails] = useState({
         title: '',
@@ -38,6 +41,7 @@ const VideoUpload = ({ show, onHide }) => {
             await axios.post(`${BASE_REMOTE_URL}/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': 'Bearer ' + user.token
                 },
             }).then(response => {
                 const videoId = response.data.id
@@ -45,6 +49,13 @@ const VideoUpload = ({ show, onHide }) => {
                 console.log("Uploaded!", videoId)
                 navigate(`../video/${videoId}`, {state: {isUploadedVideo: true}} )
             }).catch(error => {
+                // Token expired, so log the user out 
+                if (error.response.request.status === 403) {
+                    logout()
+                    alert("Session timed out, please login again.")
+                    navigate('../login')
+                }
+                console.log(error)
                 throw new Error(error)
             })
     };
