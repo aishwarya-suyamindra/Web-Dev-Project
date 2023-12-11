@@ -7,16 +7,12 @@ import "../stylesheets/VideoPlayer.css"
 const VideoPlayer = () => {
   const { id } = useParams()
   const location = useLocation();
-
-  console.log("ALready heaaa.")
-
   const [isUploadedVideo, setIsUploadedVideo] = useState(location.state.isUploadedVideo)
-  // setIsUploadedVideo(location.state.isUploadedVideo)
 
   console.log(id)
   console.log(isUploadedVideo)
 
-  const BASE_REMOTE_URL = "http://localhost:3500" // move this to env.
+  const BASE_REMOTE_URL =  process.env.REACT_APP_API_BASE || "http://localhost:3500"
 
   return (
     <>
