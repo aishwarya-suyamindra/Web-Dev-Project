@@ -17,7 +17,7 @@ const WelcomePage = () => {
   const [videoData, setVideoData] = useState([]);
   const user = useSelector((state) => state.login.userDetails)
   const isSignedIn = useSelector((state) => state.session.authenticated)
-
+  console.log(user)
   // useEffect(() => {
   //   axios.get(`${BASE_REMOTE_URL}/trending`)
   //     .then(response => {

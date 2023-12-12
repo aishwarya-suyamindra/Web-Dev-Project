@@ -11,7 +11,7 @@ export const register = function(req, res) {
   newUser.save()
   .then(user => {
     user.hash_password = undefined;
-    const token = jwt.sign({ email: user.email, fullName: user.fullName, _id: user._id }, secret, { expiresIn: '1h' }); // Set token expiration to 1 hour
+    const token = jwt.sign({ email: user.email, fullName: user.fullName, _id: user._id, role:user.role }, secret, { expiresIn: '1h' }); // Set token expiration to 1 hour
 
       return res.json({ token });
   })

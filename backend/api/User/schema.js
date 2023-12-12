@@ -21,6 +21,9 @@ var UserSchema = new mongoose.Schema({
   hash_password: {
     type: String
   },
+  role: {
+    type: String
+  },
   followers: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
