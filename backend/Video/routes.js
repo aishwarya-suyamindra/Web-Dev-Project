@@ -85,7 +85,7 @@ function VideoRoutes(app) {
         .catch(error => {
             res.status(error.httpStatus).send(error.message)
         })
-      
+    })
     app.get('/searchBar/:searchKey', async (req, res) => {
         console.log("In search.:")
         console.log(req.params.searchKey)
