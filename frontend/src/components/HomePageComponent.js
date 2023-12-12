@@ -9,6 +9,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import VideoUpload from './VideoUpload';
 import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 const WelcomePage = () => {
   const BASE_REMOTE_URL =  process.env.REACT_APP_API_BASE || "http://localhost:3500" // move this to env.
@@ -29,6 +31,15 @@ const WelcomePage = () => {
   const [showModal, setShowModal] = useState(false);
   return (
     <div className="welcome-page ">
+            {isSignedIn ? (
+        <Row className="justify-content-end mb-3 "style={{ justifyContent: 'flex-end !important' }}>
+          <Link to="/profile">
+            <FontAwesomeIcon icon={faUser} className="me-2" />
+            Hi, {user.name}
+          </Link>
+        </Row>
+      ) : null}
+
       <Row className="justify-content-center align-items-center vh-40">
         <Col className="text-center">
           <h1>Welcome to Your Streaming Service</h1>
@@ -73,10 +84,6 @@ const WelcomePage = () => {
       <Row>
         <VideoList header="Trending Videos" videoData={videoData} />
       </Row>
-
-      {isSignedIn ? <Row>
-        <VideoList header="Recently watched" videoData={videoData} />
-      </Row>: <div></div>}
 
     </div>
   );
