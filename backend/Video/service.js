@@ -114,7 +114,7 @@ const videoService = () => {
                 throw new CustomHTTPError(error, 500)
             })
         },
-
+      
         getComments: async (videoId) => {
             try {
                 const data = await videoDao.getComments(videoId)
@@ -129,7 +129,58 @@ const videoService = () => {
             } catch (error) {
                 throw new CustomHTTPError(error, 500)
             }
-        }
+        },
+          
+              getSearchVideos: async(searchTerm) => {
+        const params = {
+            part: 'snippet',
+            q: searchTerm,
+            type: 'video',
+            key: process.env.API_KEY
+          }
+          const res = [];
+          const response = await networkService.get(`/search`, null, params)
+          .then(({data, statusCode}) => {
+            if (statusCode >= 200 && statusCode < 300) {
+                const videos = data.items;
+                videos.forEach((video) => {
+                    const videoId = video.id.videoId
+                    if (videoId) {
+                        var obj = {
+                            videoId: video.id.videoId,
+                            title: video.snippet.title,
+                            isUploadedVideo: false
+                        }
+                        res.push(obj)
+                    }                        
+                })
+                console.log(res)
+            } else {
+                console.log("Failed:", data, statusCode)
+                throw new CustomHTTPError(data, statusCode)
+            }
+          })
+          .catch(error => {
+            throw new CustomHTTPError(error, 500)
+        })
+        const videoFiles = await videoDao.getVideoMetaDataMatching(searchTerm);
+        console.log("matching Db res "+videoFiles)
+        videoFiles.forEach((video) => {
+            const videoId = video._id
+            if (videoId && video.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+                var obj = {
+                    videoId: video._id,
+                    title: video.title,
+                    isUploadedVideo: true
+                }
+                res.push(obj)
+            }                        
+        })
+        console.log(res)
+        return res
+
+    }
+    }
     }
     return innerFunctions
 }

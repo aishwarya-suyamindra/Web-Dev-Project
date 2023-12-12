@@ -26,6 +26,23 @@ const videoDAO = () => {
         },
 
         /**
+         * Returns the video metadata that matches a word in the description.
+         * 
+         * @param {string} searchKey - The word to search for in the video descriptions.
+         * @returns {Array} - An array of video metadata objects that match the searchKey.
+         */
+        getVideoMetaDataMatching: async (searchKey) => {
+            const allVideos = await Video.find();
+            console.log("all vids: "+allVideos)
+            if(allVideos!=undefined){
+                return allVideos;
+            }
+            else{
+                return {}
+            }
+        },
+
+        /**
          * Deletes the metadata for the given video id.
          * 
          * @param {*} id 
@@ -65,7 +82,49 @@ const videoDAO = () => {
                 mimeType: file.mimetype
             })
         },
-
+        /**
+         * Adds a comment to the DB.
+         * 
+         * @returns 
+         */
+        createComment: async (videoId, userId, comment) => {
+            try {
+                // Create a new comment instance
+                const newComment = new Comment({
+                  videoId,
+                  userId,
+                  comment,
+                });
+          
+                // Save the comment to the database
+                const out = await newComment.save();
+                console.log("comment: "+out)
+                return out;
+              } catch (error) {
+                // Handle errors, log them, and throw if necessary
+                console.error('Error uploading comment:', error);
+                throw new CustomHTTPError(error, 500)
+              }
+        
+        },
+        /**
+         * Gets comment to the DB.
+         * 
+         * @returns 
+         */
+        getComment: async (videoId) => {
+            try {
+                // Query the database for comments with the specified videoId
+                const comments = await Comment.find({ videoId });
+          
+                return comments;
+              } catch (error) {
+                // Handle errors, log them, and throw if necessary
+                console.error('Error getting comments by videoId:', error);
+                throw new CustomHTTPError(error, 500)
+              }
+        
+        },
         /**
          * Saves the given video.
          * 

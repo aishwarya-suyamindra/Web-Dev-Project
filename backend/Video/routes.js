@@ -62,13 +62,6 @@ function VideoRoutes(app) {
     })
 
     /**
-     * Retrieve user uploaded videos
-     */
-    app.get('/uploadedVideos', authenticateToken, async (req, res) => {
-
-    })
-
-    /**
      * Add a comment for the video.
      */
     app.post('/comments/:id', authenticateToken, async (req, res) => {
@@ -92,6 +85,23 @@ function VideoRoutes(app) {
         .catch(error => {
             res.status(error.httpStatus).send(error.message)
         })
+      
+    app.get('/searchBar/:searchKey', async (req, res) => {
+        console.log("In search.:")
+        console.log(req.params.searchKey)
+        await videoService.getSearchVideos(req.params.searchKey).then(data =>
+            res.status(200).send(data)
+            ).catch(error => {
+                res.status(error.httpStatus).send(error.message)
+            })
+    })
+
+    app.get("/getComment/:videoId", async (req, res) => {
+        await videoService.getComments(req.params.videoId).then(data =>
+            res.status(200).send(data)
+            ).catch(error => {
+                res.status(error.httpStatus).send(error.message)
+            })
     })
 }
 

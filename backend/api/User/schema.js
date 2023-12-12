@@ -21,6 +21,10 @@ var UserSchema = new mongoose.Schema({
   hash_password: {
     type: String
   },
+  followers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
   created: {
     type: Date,
     default: Date.now
