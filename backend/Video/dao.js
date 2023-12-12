@@ -1,6 +1,7 @@
 import { Video, Comment, Activity } from "./model.js"
 import database from "../database.js"
 import shortid from "shortid"
+import { User } from "../api/User/model.js"
 
 const videoDAO = () => {
     const innerFunctions = {
@@ -94,6 +95,18 @@ const videoDAO = () => {
                 console.error('Error downloading file:', error);
             })
             return videoDownloadStream
+        },
+
+        addComment: async(userId, videoId, comment) => {
+            await Comment.create({ videoId: videoId, userId: userId, comment: comment})
+        },
+
+        getComments: async(videoId) => {
+            return await Comment.find({ videoId: videoId})
+        },
+
+        getUser: async(userId) => {
+            return await User.findOne({_id: userId})
         }
     }
 

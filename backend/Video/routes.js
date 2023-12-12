@@ -49,6 +49,9 @@ function VideoRoutes(app) {
         })
     })
 
+    /**
+     * Return trending videos.
+     */
     app.get('/trending', async (req, res) => {
         console.log("In here.")
         await videoService.getTrendingVideos().then(data =>
@@ -56,6 +59,39 @@ function VideoRoutes(app) {
             ).catch(error => {
                 res.status(error.httpStatus).send(error.message)
             })
+    })
+
+    /**
+     * Retrieve user uploaded videos
+     */
+    app.get('/uploadedVideos', authenticateToken, async (req, res) => {
+
+    })
+
+    /**
+     * Add a comment for the video.
+     */
+    app.post('/comments/:id', authenticateToken, async (req, res) => {
+        const data = req.body.data;
+        const videoId = req.params.id
+        const userId = req.user._id
+        await videoService.addComment(userId, videoId, data).then(_ => 
+            res.sendStatus(200))
+        .catch(error => {
+            res.status(error.httpStatus).send(error.message)
+        })
+    })
+
+    /**
+     * Get all comments for a video.
+     */
+    app.get('/comments/:id', async (req, res) => {
+        const videoId = req.params.id
+        await videoService.getComments(videoId).then((data) =>
+            res.status(200).send(data))
+        .catch(error => {
+            res.status(error.httpStatus).send(error.message)
+        })
     })
 }
 

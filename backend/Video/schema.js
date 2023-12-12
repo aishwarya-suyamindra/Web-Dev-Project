@@ -44,6 +44,7 @@ export const commentsSchema = new mongoose.Schema({
     // TODO: Refer to an existing user in the database.
     userId: {
         type: String,
+        ref: 'User',
         required: true
     },
     comment: {
