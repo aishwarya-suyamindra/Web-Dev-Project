@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 const WelcomePage = () => {
-  const BASE_REMOTE_URL =  process.env.REACT_APP_API_BASE || "http://localhost:3500" // move this to env.
+  const BASE_REMOTE_URL =  process.env.REACT_APP_API_BASE || "http://localhost:3500"
   const [videoData, setVideoData] = useState([]);
   const user = useSelector((state) => state.login.userDetails)
   const isSignedIn = useSelector((state) => state.session.authenticated)

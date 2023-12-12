@@ -1,0 +1,41 @@
+/* Comment Section Styles */
+.comment-section {
+    width: 75%; /* Take up 75% of the screen width */
+    margin: auto;
+    margin-top: 20px; /* Add some space between video player and comments */
+  }
+  
+  .comment-input {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .comment-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .comment {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  .comment-user {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .comment-user img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  
+  .comment-username {
+    font-weight: bold;
+  }
+  
