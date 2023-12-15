@@ -20,7 +20,7 @@ const VideoStreamApplication = () => {
           <Route path="/register" element={<RegitserPageComponent />} />
           <Route path="/login" element={<LoginPageComponent />} />
           <Route path='/video/:id' element={<VideoDetails/>}/>
-            <Route path='/profile' element={<ProfilePageComponent/>}/>
+            <Route path='/profile/:userId?' element={<ProfilePageComponent/>}/>
         </Routes>
       </div>
     </HashRouter>

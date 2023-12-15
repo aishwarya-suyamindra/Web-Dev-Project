@@ -1,101 +1,137 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { Form, Button, ListGroup } from 'react-bootstrap';
+import { useSelector } from "react-redux";
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const UserDetailsComponent = () => {
-  const user = useSelector((state) => state.login.userDetails);
-  console.log(user);
+const UserProfile = () => {
+  // State to store user information
+  const currentUser = useSelector((state) => state.login.userDetails)
+  //const [user, setUser] = useState(currentUser)
+  const isSignedIn = useSelector((state) => state.session.authenticated)
+  const BASE_REMOTE_URL = process.env.REACT_APP_API_BASE || "http://localhost:3500"
+  var { userId } = useParams()
+  const [userData, setUserData] = useState({
+    name: '',
+    email: '',
+    followers: [],
+    following: []
+  });
+
+  // Fetch user information from API
+  useEffect(() => {
+    userId = userId === undefined ? currentUser.userId : userId
+    axios.get(`${BASE_REMOTE_URL}/profile/${userId}`)
+      .then(response => {
+        const data = response.data
+        setUserData({
+          name: data.fullName,
+          email: data.email,
+          followers: data.followers.map(x => ({
+            name: x.name,
+            userId: x.userId
+          })),
+          following: data.following.map(x => ({
+            name: x.name,
+            userId: x.userId
+          }))
+        })
+      }).catch(error => console.error('Error fetching user data:', error));
+  }, [userId]);
+
+  // Function to handle form submission
+  const handleFormSubmit = event => {
+    event.preventDefault();
+
+    // updateUserInfo(userData);
+  };
+
+  const handleFollow = async(event) => {
+    const userIdToFollow = userId;
+    const data = {userId: currentUser.id, userIdToFollow: userId, username: userData.name}
+    await axios.post(`${BASE_REMOTE_URL}/followUser`, data)
+    .then(response => {
+      console.log("following!")
+    })
+    .catch(error => {
+      console.log(error.response.data);
+    })
+  }
 
   return (
     <div>
-      <h2>User Details</h2>
-      {user ? (
-        <>
-          <p>Name: {user.name}</p>
-          <p>Email: {user.email}</p>
-          {/* Add any other user details you want to display */}
-        </>
-      ) : (
-        <p>No user details available.</p>
-      )}
+      {currentUser.id === userId ?
+        <div> 
+          <Form onSubmit={handleFormSubmit}>
+            <Form.Group controlId="formName" className='m-3'>
+              <Form.Label className='mb-2'>Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your name"
+                value={userData.name}
+                onChange={e => setUserData({ ...userData, name: e.target.value })}
+              />
+            </Form.Group>
+            <Form.Group controlId="formEmail" className='m-3'>
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter your email"
+                value={userData.email}
+                onChange={e => setUserData({ ...userData, email: e.target.value })}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formPhone" className='m-3'>
+              <Form.Label>Phone</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your phone number"
+                value={userData.phone}
+                onChange={e => setUserData({ ...userData, phone: e.target.value })}
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit" className='m-3'>
+              Update Profile
+            </Button>
+          </Form></div> : <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px' }}>
+          <div><h2>{userData.name}</h2></div>
+          {isSignedIn ?  <div>
+            <Button onClick={handleFollow} >
+                <FontAwesomeIcon icon={faPlus} className="me-2" />
+                Follow
+              </Button>
+          </div> : <div></div>}
+         
+        </div>
+      }
+
+      {/* List of Followers */}
+      <h3 className='m-3'>Following</h3>
+      <ListGroup className='m-3'>
+        {userData.following.map(follower => (
+          <ListGroup.Item key={follower.id}>
+            <a href={`/user/${follower.id}`}>{follower.name}</a>
+          </ListGroup.Item>
+        ))}
+      </ListGroup>
+
+      {/* List of Following */}
+      {/* <h3 className='mb-3'>Following</h3>
+      <ListGroup className='mb-3'>
+        {userData.following.map(followingUser => (
+          <ListGroup.Item key={followingUser.id}>
+            <a href={`/user/${followingUser.id}`}>{followingUser.name}</a>
+          </ListGroup.Item>
+        ))}
+      </ListGroup> */}
     </div>
   );
 };
 
-export default UserDetailsComponent;
-
-
-// import React from 'react';
-// import { useSelector } from 'react-redux';
-// import { useParams, Link } from 'react-router-dom';
-
-// const ProfilePageComponent = () => {
-//   const { profileId } = useParams();
-//   const loggedInUser = useSelector((state) => state.login.userDetails);
-
-//   const fetchUserProfileById = async (userId) => {
-    
-//   };
-
-//   const isOwnProfile = !profileId || (loggedInUser && loggedInUser.id === profileId);
-
- 
-//   const fetchUserProfile = async () => {
-//     try {
-//       if (isOwnProfile) {
-   
-//         const ownProfileData = await fetchOwnProfileData(loggedInUser.id);
-//         return ownProfileData;
-//       } else {
-      
-//         const otherUserProfileData = await fetchUserProfileById(profileId);
-//         return otherUserProfileData;
-//       }
-//     } catch (error) {
-//       console.error('Error fetching user profile:', error);
-//       throw error;
-//     }
-//   };
-
-
-//   const fetchOwnProfileData = async (userId) => {
-   
-//   };
-
-//   return (
-//     <div>
-//       <h2>User Profile</h2>
-//       {isOwnProfile && <p>This is your own profile.</p>}
-      
-     
-//       {isOwnProfile && <Link to="/profile/edit">Edit Profile</Link>}
-
-//       <section>
-//         <h3>Personal Information</h3>
-//         <p>Name: {userProfile?.name}</p>
-//         {isOwnProfile && <p>Email: {userProfile?.email}</p>}
-     
-//       </section>
-
-    
-//       {isOwnProfile && (
-//         <section>
-//           <h3>Following</h3>
-     
-//         </section>
-//       )}
-
-//       {isOwnProfile && (
-//         <section>
-//           <h3>Followers</h3>
-          
-//         </section>
-//       )}
-
-//     </div>
-//   );
-// };
-
-// export default ProfilePageComponent;
+export default UserProfile;
 
 
 

@@ -69,9 +69,9 @@ function VideoRoutes(app) {
         console.log("In here.")
         await videoService.getTrendingVideos().then(data =>
             res.status(200).send(data)
-            ).catch(error => {
-                res.status(error.httpStatus).send(error.message)
-            })
+        ).catch(error => {
+            res.status(error.httpStatus).send(error.message)
+        })
     })
 
     /**
@@ -81,11 +81,11 @@ function VideoRoutes(app) {
         const data = req.body.data;
         const videoId = req.params.id
         const userId = req.user._id
-        await videoService.addComment(userId, videoId, data).then(_ => 
+        await videoService.addComment(userId, videoId, data).then(_ =>
             res.sendStatus(200))
-        .catch(error => {
-            res.status(error.httpStatus).send(error.message)
-        })
+            .catch(error => {
+                res.status(error.httpStatus).send(error.message)
+            })
     })
 
     /**
@@ -95,26 +95,27 @@ function VideoRoutes(app) {
         const videoId = req.params.id
         await videoService.getComments(videoId).then((data) =>
             res.status(200).send(data))
-        .catch(error => {
-            res.status(error.httpStatus).send(error.message)
-        })
+            .catch(error => {
+                res.status(error.httpStatus).send(error.message)
+            })
     })
+    
     app.get('/searchBar/:searchKey', async (req, res) => {
         console.log("In search.:")
         console.log(req.params.searchKey)
         await videoService.getSearchVideos(req.params.searchKey).then(data =>
             res.status(200).send(data)
-            ).catch(error => {
-                res.status(error.httpStatus).send(error.message)
-            })
+        ).catch(error => {
+            res.status(error.httpStatus).send(error.message)
+        })
     })
 
     app.get("/getComment/:videoId", async (req, res) => {
         await videoService.getComments(req.params.videoId).then(data =>
             res.status(200).send(data)
-            ).catch(error => {
-                res.status(error.httpStatus).send(error.message)
-            })
+        ).catch(error => {
+            res.status(error.httpStatus).send(error.message)
+        })
     })
 }
 
