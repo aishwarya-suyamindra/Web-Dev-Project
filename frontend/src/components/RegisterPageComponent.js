@@ -55,8 +55,8 @@ const Register = () => {
       dispatch(setUserDetails(userData))
       navigate('/')
     }).catch(error => {
-      alert('Registration failed: ' + error.response.data);
-      console.log(error.response.data);
+      alert('Registration failed: ');
+      // console.log(error.response.data);
     })
   };
 

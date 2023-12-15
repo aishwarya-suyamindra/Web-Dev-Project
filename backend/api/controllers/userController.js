@@ -2,6 +2,7 @@
 import { User } from '../User/model.js';
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import authenticateToken from "../../Util/authMiddleware.js"
 
 const secret =  process.env.TOKEN_SECRET || "API"
 export const register = function(req, res) {
@@ -37,7 +38,6 @@ export const sign_in = function(req, res) {
     .catch(function(err) {
       throw err;
     });
-    
 };
 
 
@@ -79,5 +79,23 @@ export const followUser = async function(req, res) {
   }
   const data = {name: username, userId: userIdToFollow}
   await User.updateOne({ _id: userId}, {$push: {following: data}} )
+  res.sendStatus(200)
+}
 
+export const updateUser = async function(req, res) {
+  authenticateToken(req, res, async () => {
+    const user = req.body;
+  const userId = req.user._id
+  const userData = await User.findOne({ _id: userId })
+  if (!userData) {
+    res.sendStatus(404)
+    return
+}
+const data = {...userData._doc, fullName: user.fullName, email: user.email, phone: user.phone}
+  await User.updateOne({_id: userId}, 
+    data)
+    .then(res.status(200).send(user))
+    .catch(error => res.status(500).send(error.message))
+
+  })
 }

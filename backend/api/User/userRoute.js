@@ -11,6 +11,7 @@ export const UserRoutes = (app) => {
    app.route('/auth/sign_in')
         .post(userHandler.sign_in);
     app.route('/profile/:userId').get(userHandler.getUserData);
-    app.route('/followUser')
+    app.route('/profile/followUser')
         .post(userHandler.followUser);
+    app.route('/profile').put(userHandler.updateUser);
 };
