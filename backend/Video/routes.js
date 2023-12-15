@@ -1,6 +1,7 @@
 import videoService from "./service.js"
 import multer from "multer"
 import authenticateToken from "../Util/authMiddleware.js"
+import { log } from "console"
 
 function VideoRoutes(app) {
     const upload = multer()
@@ -12,6 +13,18 @@ function VideoRoutes(app) {
         const data = JSON.parse(req.body.data);
         const userId = req.user._id
         await videoService.uploadVideo(file, data, userId).then(video =>
+            res.status(200).send(video)
+        ).catch(error => {
+            res.status(error.httpStatus).send(error.message)
+        })
+    })
+    /**
+     * Delete a video.
+     */
+    app.post("/delete",authenticateToken,  async (req, res) => {
+        const data = req.body.data;
+        console.log("/delete "+data)
+        await videoService.deleteVideo(data).then(video =>
             res.status(200).send(video)
         ).catch(error => {
             res.status(error.httpStatus).send(error.message)

@@ -22,6 +22,20 @@ const videoService = () => {
                 throw new CustomHTTPError(error, 500)
             })
         },
+        /**
+         * Deletes the video with the given data, for the user.
+         * 
+         * @param {*} title 
+         */
+        deleteVideo: async (title) => {
+            console.log("deleteVideo "+title)
+            return await videoDao.deleteVideoMetadata(title).then((video)=>{
+                return video
+            }).catch(error => {
+                throw new CustomHTTPError(error, 500)
+            })
+            
+        },
 
         /**
          * Retrieves the video from the local database if available, else the remote API.

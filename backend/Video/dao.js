@@ -47,9 +47,9 @@ const videoDAO = () => {
          * 
          * @param {*} id 
          */
-        deleteVideoMetaData: async (id) => {
-            return await Video.deleteOne({ _id: id })
-        },
+        // deleteVideoMetaData: async (id) => {
+        //     return await Video.deleteOne({ _id: id })
+        // },
 
         /**
          * Returns the video files for the given id.
@@ -82,6 +82,34 @@ const videoDAO = () => {
                 mimeType: file.mimetype
             })
         },
+        /**
+         * Saves given data as metadata for a video.
+         * 
+         * @param {*} file
+         * @param {*} data 
+         * @param {*} userId 
+         * @returns 
+         */
+        deleteVideoMetadata: async (title) => {
+            try {
+                console.log("deleteVideoMetadata"+title)
+              const deletedVideo = await Video.deleteOne({ title });
+          
+              if (deletedVideo.deletedCount === 0) {
+                console.log("Error in delete metadata")
+                throw new Error('Video not found');
+              }
+          
+              return deletedVideo;
+            } catch (error) {
+              // Handle errors, log them, and throw if necessary
+              console.error('Error deleting video metadata:', error);
+              throw {
+                httpStatus: 500, // Internal Server Error
+                message: 'Error deleting video metadata.',
+              };
+            }
+          },
         /**
          * Adds a comment to the DB.
          * 
