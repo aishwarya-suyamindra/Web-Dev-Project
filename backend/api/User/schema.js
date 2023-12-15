@@ -25,8 +25,12 @@ var UserSchema = new mongoose.Schema({
     type: String
   },
   followers: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    name: { type: String },
+    userId: { type: String }
+  }],
+  following: [{
+    name: { type: String },
+    userId: { type: String }
   }],
   created: {
     type: Date,

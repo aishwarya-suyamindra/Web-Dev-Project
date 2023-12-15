@@ -4,12 +4,22 @@ import db from "./database.js";
 import cors from "cors";
 import VideoRoutes from "./Video/routes.js";
 import { UserRoutes } from "./api/User/userRoute.js"
+import session from "express-session";
 
 const app = express()
 app.use(cors())
 app.use(express.json())
 
-const config = dotenv.config()
+const sessionOptions = {
+    secret: "any string",
+    resave: false,
+    saveUninitialized: false,
+  };
+  app.use(
+    session(sessionOptions)
+  );  
+
+const config = dotenv.config({path: 'backend/.env'})
 
 if (config.error) {
     console.log(config.error)

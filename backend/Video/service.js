@@ -136,7 +136,8 @@ const videoService = () => {
                     const user = await videoDao.getUser(obj.userId)
                     return {
                         name: user.fullName,
-                        text: obj.comment
+                        text: obj.comment,
+                        userId: user._id
                     }
                 }))
                 return res

@@ -10,15 +10,17 @@ import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { Link } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 import "../stylesheets/VideoDetails.css"
 
 const VideoDetails = () => {
     const BASE_REMOTE_URL = process.env.REACT_APP_API_BASE || "http://localhost:3500"
     const { id } = useParams()
     const navigate = useNavigate();
+    const location = useLocation();
     const isSignedIn = useSelector((state) => state.session.authenticated)
     const user = useSelector((state) => state.login.userDetails)
-    const [isUploadedVideo, setIsUploadedVideo] = useState(false)
+    const [isUploadedVideo, setIsUploadedVideo] = useState(location.state.isUploadedVideo)
     const [comments, setComments] = useState([])
     const [comment, setComment] = useState()
 
@@ -45,8 +47,9 @@ const VideoDetails = () => {
         }).then(response => {
             // Add the comment to the local arr.
             console.log("Comment added!")
+            console.log("Comments: user -", user.userId);
             setComment('')
-            setComments([...comments, { name: user.name, text: comment }]);
+            setComments([...comments, { name: user.name, text: comment, userId: user.userId }]);
         }).catch(error => {
             // Token expired, so log the user out 
             if (error.response.request.status === 403) {
@@ -87,7 +90,7 @@ const VideoDetails = () => {
                             <div className="comment-user">
                                 <FontAwesomeIcon icon={faUserCircle}/>
                                 <span className="comment-username">
-                                    <Link to="">{comment.name}</Link>
+                                    <Link to={`/profile/${comment.userId}`}>{comment.name}</Link>
                                 </span>
                             </div>
                             <div>{comment.text}</div>

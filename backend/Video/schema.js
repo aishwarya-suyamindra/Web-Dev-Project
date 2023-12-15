@@ -15,6 +15,7 @@ export const videoSchema = new mongoose.Schema({
     // TODO: Refer to an existing user in the database.
     userId: {
         type: String,
+        ref: 'User',
         required: true
     },
     mimeType: {
@@ -57,18 +58,16 @@ export const commentsSchema = new mongoose.Schema({
  * Schema for user activity.
  */
 export const activitySchema = new mongoose.Schema({
-    // TODO: Refer to an existing user in the database.
     userId: {
         type: String,
+        ref: 'User',
         required: true
     },
     action: {
         type: String,
-        required: true,
         enum: ["Like", "Dislike"]
     },
-    activity: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Activity'
-    }
+    watchedVideos: [{
+        type: String
+    }]
 }, {collection: "activity", timestamps: true})
