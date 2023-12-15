@@ -3,6 +3,8 @@ import { Route, Routes, HashRouter, Navigate } from 'react-router-dom';
 import HomePageComponent from './HomePageComponent';
 import RegitserPageComponent from './RegisterPageComponent';
 import LoginPageComponent from './LoginPageComponent';
+import VideoDetails from './DetailsComponent';
+import ProfilePageComponent from './ProfilePageComponent';
 import VideoPlayer from './VideoPlayer';
 import store from '../Util/store';
 import { Provider } from 'react-redux';
@@ -17,7 +19,8 @@ const VideoStreamApplication = () => {
           <Route path="/home" element={<HomePageComponent/>} />
           <Route path="/register" element={<RegitserPageComponent />} />
           <Route path="/login" element={<LoginPageComponent />} />
-          <Route path='/video/:id' element={<VideoPlayer/>}/>
+          <Route path='/video/:id' element={<VideoDetails/>}/>
+            <Route path='/profile/:userId?' element={<ProfilePageComponent/>}/>
         </Routes>
       </div>
     </HashRouter>

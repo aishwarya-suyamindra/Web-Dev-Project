@@ -1,7 +1,8 @@
 'use strict';
 import { User } from '../User/model.js';
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs";
+import authenticateToken from "../../Util/authMiddleware.js"
 
 const secret =  process.env.TOKEN_SECRET || "API"
 export const register = function(req, res) {
@@ -11,9 +12,9 @@ export const register = function(req, res) {
   newUser.save()
   .then(user => {
     user.hash_password = undefined;
-    const token = jwt.sign({ email: user.email, fullName: user.fullName, _id: user._id }, secret, { expiresIn: '1h' }); // Set token expiration to 1 hour
-
-      return res.json({ token });
+    const token = jwt.sign({ email: user.email, fullName: user.fullName, _id: user._id, role:user.role }, secret, { expiresIn: '1h' });
+    req.session['currentUser'] = user;
+    return res.json({ token: token, name: user.fullName, userId: user._id, email: user.email });
   })
   .catch(err => {
     console.error("Error during registration:", err);
@@ -30,13 +31,13 @@ export const sign_in = function(req, res) {
       if (!user || !user.comparePassword(req.body.password)) {
         return res.status(401).json({ message: 'Authentication failed. Invalid user or password.' });
       }
+      req.session['currentUser'] = user;
       return res.json({ token: jwt.sign({ email: user.email, fullName: user.fullName, _id: user._id }, secret, { expiresIn: '2h' }),
-                        name: user.fullName });
+                        name: user.fullName, userId: user._id, email: user.email});
     })
     .catch(function(err) {
       throw err;
     });
-    
 };
 
 
@@ -56,3 +57,45 @@ export const profile = function(req, res, next) {
    return res.status(401).json({ message: 'Invalid token' });
   }
 };
+
+
+export const getUserData = async function(req, res) {
+  const {userId} = req.params
+  const userData = await User.findOne({ _id: userId })
+  if (!userData) {
+      res.sendStatus(401)
+      return
+  }
+  res.send(userData._doc)
+}
+
+
+export const followUser = async function(req, res) {
+  const {userId, userIdToFollow, username} = req.body
+  const userData = await User.findOne({ _id: userId })
+  if (!userData) {
+      res.sendStatus(404)
+      return
+  }
+  const data = {name: username, userId: userIdToFollow}
+  await User.updateOne({ _id: userId}, {$push: {following: data}} )
+  res.sendStatus(200)
+}
+
+export const updateUser = async function(req, res) {
+  authenticateToken(req, res, async () => {
+    const user = req.body;
+  const userId = req.user._id
+  const userData = await User.findOne({ _id: userId })
+  if (!userData) {
+    res.sendStatus(404)
+    return
+}
+const data = {...userData._doc, fullName: user.fullName, email: user.email, phone: user.phone}
+  await User.updateOne({_id: userId}, 
+    data)
+    .then(res.status(200).send(user))
+    .catch(error => res.status(500).send(error.message))
+
+  })
+}

@@ -10,6 +10,7 @@ const Register = () => {
   const [fullName, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('');
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -21,6 +22,7 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(name+value)
     switch (name) {
       case 'fullName':
         setName(value);
@@ -30,6 +32,9 @@ const Register = () => {
         break;
       case 'password':
         setPassword(value);
+        break;
+      case 'role':
+        setRole(value);
         break;
       default:
       // Handle other cases if needed
@@ -42,15 +47,16 @@ const Register = () => {
       fullName: fullName,
       email: email,
       password: password,
+      role:role
     }).then(response => {
       console.log(response);
-      const userData = { ...response.data, name: fullName }
+      const userData = { ...response.data, name: fullName, role:role }
       login(userData)
       dispatch(setUserDetails(userData))
       navigate('/')
     }).catch(error => {
-      alert('Registration failed: ' + error.response.data);
-      console.log(error.response.data);
+      alert('Registration failed: ');
+      // console.log(error.response.data);
     })
   };
 
@@ -69,6 +75,21 @@ const Register = () => {
         <div className="mb-3">
           <label className="form-label">Password:</label>
           <input type="password" className="form-control" name="password" value={password} onChange={handleChange} />
+        </div>
+          <div className="mb-3">
+          <label className="form-label">
+            Role:
+          </label>
+          <select
+            className="form-control"
+            name="role"
+            id="role"
+            value={role}
+            onChange={handleChange}
+          >
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+          </select>
         </div>
         <button type="submit" className="btn btn-primary">
           Register

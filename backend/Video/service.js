@@ -2,6 +2,7 @@ import videoDao from "./dao.js"
 import CustomHTTPError from "../Util/customError.js"
 import networkService from "../Services/networkService.js"
 import * as fs from 'fs'
+import { User } from "../api/User/model.js"
 
 
 const videoService = () => {
@@ -13,14 +14,27 @@ const videoService = () => {
          * @param {*} data 
          * @param {*} userId 
          */
-        uploadVideo: async(file, data, userId) => {
+        uploadVideo: async (file, data, userId) => {
             const res = await videoDao.createVideoMetadata(file, data, userId)
             return await videoDao.uploadVideo(res._id, file).then((video) => {
-                console.log("Here.")
                 return video
-            }) .catch(error => {
+            }).catch(error => {
                 throw new CustomHTTPError(error, 500)
-            }) 
+            })
+        },
+        /**
+         * Deletes the video with the given data, for the user.
+         * 
+         * @param {*} title 
+         */
+        deleteVideo: async (title) => {
+            console.log("deleteVideo "+title)
+            return await videoDao.deleteVideoMetadata(title).then((video)=>{
+                return video
+            }).catch(error => {
+                throw new CustomHTTPError(error, 500)
+            })
+            
         },
 
         /**
@@ -30,10 +44,10 @@ const videoService = () => {
          * @param {Number} startRange
          * @param {Number} endRange
          */
-        getVideo: async(id, startRange, endRange) => {
+        getVideo: async (id, startRange, endRange) => {
             // look for the video in the database
             const isvideoAvailable = await videoDao.isvideoAvailable(id)
-            
+
             if (isvideoAvailable) {
                 const videoFiles = await videoDao.getVideoFiles(id)
                 // validate videoFiles
@@ -44,7 +58,7 @@ const videoService = () => {
                 const obj = {
                     start: startRange,
                     end: end,
-                    fileLength: videoFiles[0].length-1,
+                    fileLength: videoFiles[0].length - 1,
                     contentLength: end - startRange,
                     mimeType: videoData.mimeType,
                     stream: stream
@@ -56,10 +70,47 @@ const videoService = () => {
                     'Range': 'bytes=' + startRange + "-" + endRange
                 }
                 networkService.get('/videos/${id}', headers)
-                .then((data, statusCode) => {
+                    .then((data, statusCode) => {
+                        if (statusCode >= 200 && statusCode < 300) {
+                            console.log("Received data successfully!", data)
+                            return data
+                        } else {
+                            console.log("Failed:", data, statusCode)
+                            throw new CustomHTTPError(data, statusCode)
+                        }
+                    })
+                    .catch(error => {
+                        throw new CustomHTTPError(error, 500)
+                    })
+            }
+        },
+
+        getTrendingVideos: async () => {
+            const params = {
+                part: 'snippet',
+                chart: 'mostPopular',
+                regionCode: 'US',
+                maxResults: 15,
+                key: process.env.API_KEY
+            }
+            const response = await networkService.get(`/search`, null, params)
+                .then(({ data, statusCode }) => {
                     if (statusCode >= 200 && statusCode < 300) {
-                        console.log("Received data successfully!", data)
-                        return data
+                        const trendingVideos = data.items;
+                        const response = []
+                        trendingVideos.forEach((video) => {
+                            const videoId = video.id.videoId
+                            if (videoId) {
+                                var obj = {
+                                    videoId: video.id.videoId,
+                                    title: video.snippet.title,
+                                    thumbnail: video.snippet.thumbnails.default
+                                }
+                                response.push(obj)
+                            }
+                        })
+                        console.log(response)
+                        return response
                     } else {
                         console.log("Failed:", data, statusCode)
                         throw new CustomHTTPError(data, statusCode)
@@ -68,70 +119,59 @@ const videoService = () => {
                 .catch(error => {
                     throw new CustomHTTPError(error, 500)
                 })
-            }
-        },
-
-        getTrendingVideos: async() => {
-            const params = {
-                part: 'snippet',
-                chart: 'mostPopular',
-                regionCode: 'US', 
-                maxResults: 15, 
-                key: process.env.API_KEY
-              }
-              const response = await networkService.get(`/search`, null, params)
-              .then(({data, statusCode}) => {
-                if (statusCode >= 200 && statusCode < 300) {
-                    const trendingVideos = data.items;
-                    const response = []
-                    trendingVideos.forEach((video) => {
-                        const videoId = video.id.videoId
-                        if (videoId) {
-                            var obj = {
-                                videoId: video.id.videoId,
-                                title: video.snippet.title,
-                                thumbnail: video.snippet.thumbnails.default
-                            }
-                            response.push(obj)
-                        }                        
-                    })
-                    console.log(response)
-                    return response
-                } else {
-                    console.log("Failed:", data, statusCode)
-                    throw new CustomHTTPError(data, statusCode)
-                }
-              })
-              .catch(error => {
-                throw new CustomHTTPError(error, 500)
-            })
             return response
 
-    },
-    getSearchVideos: async(searchTerm) => {
+        },
+
+        addComment: async (userId, videoId, data) => {
+            return await videoDao.addComment(userId, videoId, data).catch(error => {
+                throw new CustomHTTPError(error, 500)
+            })
+        },
+      
+        getComments: async (videoId) => {
+            try {
+                const data = await videoDao.getComments(videoId)
+                const res = await Promise.all(data.map(async (obj) => {
+                    const user = await videoDao.getUser(obj.userId)
+                    return {
+                        name: user.fullName,
+                        text: obj.comment,
+                        userId: user._id
+                    }
+                }))
+                return res
+            } catch (error) {
+                throw new CustomHTTPError(error, 500)
+            }
+        },
+          
+        getSearchVideos: async(searchTerm) => {
         const params = {
             part: 'snippet',
             q: searchTerm,
             type: 'video',
             key: process.env.API_KEY
           }
+          const res = [];
           const response = await networkService.get(`/search`, null, params)
           .then(({data, statusCode}) => {
             if (statusCode >= 200 && statusCode < 300) {
                 const videos = data.items;
-                const response = []
+                console.log(videos)
                 videos.forEach((video) => {
                     const videoId = video.id.videoId
                     if (videoId) {
                         var obj = {
                             videoId: video.id.videoId,
-                            title: video.snippet.title
+                            title: video.snippet.title,
+                            thumbnail: video.snippet.thumbnails.default,
+                            isUploadedVideo: false
                         }
-                        response.push(obj)
+                        res.push(obj)
                     }                        
                 })
-                console.log(response)
-                return response
+                console.log(res)
             } else {
                 console.log("Failed:", data, statusCode)
                 throw new CustomHTTPError(data, statusCode)
@@ -140,11 +180,27 @@ const videoService = () => {
           .catch(error => {
             throw new CustomHTTPError(error, 500)
         })
-        return response
+        const videoFiles = await videoDao.getVideoMetaDataMatching(searchTerm);
+        console.log("matching Db res "+videoFiles)
+        videoFiles.forEach((video) => {
+            const videoId = video._id
+            if (videoId && video.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+                var obj = {
+                    videoId: video._id,
+                    title: video.title,
+                    isUploadedVideo: true
+                }
+                res.push(obj)
+            }                        
+        })
+        console.log(res)
+        return res
 
-}
-}
+    }
+    }
     return innerFunctions
-}
+    }
+    
+
 
 export default videoService()

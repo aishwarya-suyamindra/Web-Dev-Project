@@ -10,4 +10,8 @@ export const UserRoutes = (app) => {
         .post(userHandler.register);
    app.route('/auth/sign_in')
         .post(userHandler.sign_in);
+    app.route('/profile/:userId').get(userHandler.getUserData);
+    app.route('/profile/followUser')
+        .post(userHandler.followUser);
+    app.route('/profile').put(userHandler.updateUser);
 };

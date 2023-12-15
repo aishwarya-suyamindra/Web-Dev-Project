@@ -9,7 +9,8 @@ const Login = () => {
   const BASE_REMOTE_URL =  process.env.REACT_APP_API_BASE || "http://localhost:3500"
   const [credentials, setCredentials] = useState({
     email: '',
-    password: ''
+    password: '',
+    role:''
 });
 
 const navigate = useNavigate();
@@ -73,7 +74,7 @@ const dispatch = useDispatch();
             value={credentials.password}
             onChange= {handleChange}
           />
-        </div>
+          </div>
         <button type="button" className="btn btn-primary" onClick={handleLogin}>
           Login
         </button>

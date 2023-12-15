@@ -1,6 +1,7 @@
 import { Video, Comment, Activity } from "./model.js"
 import database from "../database.js"
 import shortid from "shortid"
+import { User } from "../api/User/model.js"
 
 const videoDAO = () => {
     const innerFunctions = {
@@ -25,13 +26,30 @@ const videoDAO = () => {
         },
 
         /**
+         * Returns the video metadata that matches a word in the description.
+         * 
+         * @param {string} searchKey - The word to search for in the video descriptions.
+         * @returns {Array} - An array of video metadata objects that match the searchKey.
+         */
+        getVideoMetaDataMatching: async (searchKey) => {
+            const allVideos = await Video.find();
+            console.log("all vids: "+allVideos)
+            if(allVideos!=undefined){
+                return allVideos;
+            }
+            else{
+                return {}
+            }
+        },
+
+        /**
          * Deletes the metadata for the given video id.
          * 
          * @param {*} id 
          */
-        deleteVideoMetaData: async (id) => {
-            return await Video.deleteOne({ _id: id })
-        },
+        // deleteVideoMetaData: async (id) => {
+        //     return await Video.deleteOne({ _id: id })
+        // },
 
         /**
          * Returns the video files for the given id.
@@ -64,7 +82,77 @@ const videoDAO = () => {
                 mimeType: file.mimetype
             })
         },
-
+        /**
+         * Saves given data as metadata for a video.
+         * 
+         * @param {*} file
+         * @param {*} data 
+         * @param {*} userId 
+         * @returns 
+         */
+        deleteVideoMetadata: async (title) => {
+            try {
+                console.log("deleteVideoMetadata"+title)
+              const deletedVideo = await Video.deleteOne({ title });
+          
+              if (deletedVideo.deletedCount === 0) {
+                console.log("Error in delete metadata")
+                throw new Error('Video not found');
+              }
+          
+              return { success: true };
+            } catch (error) {
+              // Handle errors, log them, and throw if necessary
+              console.error('Error deleting video metadata:', error);
+              throw {
+                httpStatus: 500, // Internal Server Error
+                message: 'Error deleting video metadata.',
+              };
+            }
+          },
+        /**
+         * Adds a comment to the DB.
+         * 
+         * @returns 
+         */
+        createComment: async (videoId, userId, comment) => {
+            try {
+                // Create a new comment instance
+                const newComment = new Comment({
+                  videoId,
+                  userId,
+                  comment,
+                });
+          
+                // Save the comment to the database
+                const out = await newComment.save();
+                console.log("comment: "+out)
+                return out;
+              } catch (error) {
+                // Handle errors, log them, and throw if necessary
+                console.error('Error uploading comment:', error);
+                throw new CustomHTTPError(error, 500)
+              }
+        
+        },
+        /**
+         * Gets comment to the DB.
+         * 
+         * @returns 
+         */
+        getComment: async (videoId) => {
+            try {
+                // Query the database for comments with the specified videoId
+                const comments = await Comment.find({ videoId });
+          
+                return comments;
+              } catch (error) {
+                // Handle errors, log them, and throw if necessary
+                console.error('Error getting comments by videoId:', error);
+                throw new CustomHTTPError(error, 500)
+              }
+        
+        },
         /**
          * Saves the given video.
          * 
@@ -94,6 +182,18 @@ const videoDAO = () => {
                 console.error('Error downloading file:', error);
             })
             return videoDownloadStream
+        },
+
+        addComment: async(userId, videoId, comment) => {
+            await Comment.create({ videoId: videoId, userId: userId, comment: comment})
+        },
+
+        getComments: async(videoId) => {
+            return await Comment.find({ videoId: videoId})
+        },
+
+        getUser: async(userId) => {
+            return await User.findOne({_id: userId})
         }
     }
 

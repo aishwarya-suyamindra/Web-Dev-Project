@@ -4,11 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import "../stylesheets/VideoPlayer.css"
 
-const VideoPlayer = () => {
-  const { id } = useParams()
-  const location = useLocation();
-  const [isUploadedVideo, setIsUploadedVideo] = useState(location.state.isUploadedVideo)
-
+const VideoPlayer = ({id, isUploadedVideo}) => {
   console.log(id)
   console.log(isUploadedVideo)
 
@@ -27,11 +23,7 @@ const VideoPlayer = () => {
             allowFullScreen
           ></iframe>}
       </div>
-      <div className="comment-section">
-        <input type="text" className="comment-input" placeholder="Add a comment" />
-        <ul className="comment-list">
-        </ul>
-      </div>
+      
     </>
 
   );

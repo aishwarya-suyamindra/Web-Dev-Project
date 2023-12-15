@@ -18,9 +18,24 @@ var UserSchema = new mongoose.Schema({
     trim: true,
     required: true
   },
+  phone: {
+    type: String,
+    trim: true,
+  },
   hash_password: {
     type: String
   },
+  role: {
+    type: String
+  },
+  followers: [{
+    name: { type: String },
+    userId: { type: String }
+  }],
+  following: [{
+    name: { type: String },
+    userId: { type: String }
+  }],
   created: {
     type: Date,
     default: Date.now

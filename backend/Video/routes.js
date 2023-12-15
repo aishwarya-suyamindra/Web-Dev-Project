@@ -1,6 +1,7 @@
 import videoService from "./service.js"
 import multer from "multer"
 import authenticateToken from "../Util/authMiddleware.js"
+import { log } from "console"
 
 function VideoRoutes(app) {
     const upload = multer()
@@ -12,6 +13,18 @@ function VideoRoutes(app) {
         const data = JSON.parse(req.body.data);
         const userId = req.user._id
         await videoService.uploadVideo(file, data, userId).then(video =>
+            res.status(200).send(video)
+        ).catch(error => {
+            res.status(error.httpStatus).send(error.message)
+        })
+    })
+    /**
+     * Delete a video.
+     */
+    app.post("/delete",authenticateToken,  async (req, res) => {
+        const data = req.body.data;
+        console.log("/delete "+data)
+        await videoService.deleteVideo(data).then(video =>
             res.status(200).send(video)
         ).catch(error => {
             res.status(error.httpStatus).send(error.message)
@@ -49,21 +62,60 @@ function VideoRoutes(app) {
         })
     })
 
+    /**
+     * Return trending videos.
+     */
     app.get('/trending', async (req, res) => {
         console.log("In here.")
         await videoService.getTrendingVideos().then(data =>
             res.status(200).send(data)
-            ).catch(error => {
+        ).catch(error => {
+            res.status(error.httpStatus).send(error.message)
+        })
+    })
+
+    /**
+     * Add a comment for the video.
+     */
+    app.post('/comments/:id', authenticateToken, async (req, res) => {
+        const data = req.body.data;
+        const videoId = req.params.id
+        const userId = req.user._id
+        await videoService.addComment(userId, videoId, data).then(_ =>
+            res.sendStatus(200))
+            .catch(error => {
                 res.status(error.httpStatus).send(error.message)
             })
     })
-    app.get('/searchBar/:searchKey', async (req, res) => {
-        console.log("In search.")
-        await videoService.getSearchVideos(req.params.searchKey).then(data =>
-            res.status(200).send(data)
-            ).catch(error => {
+
+    /**
+     * Get all comments for a video.
+     */
+    app.get('/comments/:id', async (req, res) => {
+        const videoId = req.params.id
+        await videoService.getComments(videoId).then((data) =>
+            res.status(200).send(data))
+            .catch(error => {
                 res.status(error.httpStatus).send(error.message)
             })
+    })
+    
+    app.get('/searchBar/:searchKey', async (req, res) => {
+        console.log("In search.:")
+        console.log(req.params.searchKey)
+        await videoService.getSearchVideos(req.params.searchKey).then(data =>
+            res.status(200).send(data)
+        ).catch(error => {
+            res.status(error.httpStatus).send(error.message)
+        })
+    })
+
+    app.get("/getComment/:videoId", async (req, res) => {
+        await videoService.getComments(req.params.videoId).then(data =>
+            res.status(200).send(data)
+        ).catch(error => {
+            res.status(error.httpStatus).send(error.message)
+        })
     })
 }
 

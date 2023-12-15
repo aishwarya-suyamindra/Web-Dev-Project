@@ -28,29 +28,3 @@
     display: block;
     padding-top: 56.25%;
   }
-  
-  .comment-section {
-    width: 75%;
-    margin: auto;
-    margin-top: 20px;
-  }
-  
-  .comment-input {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-  
-  .comment-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .comment {
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
-  
-  /* Additional styles for controls or overlays can be added here */
-  
