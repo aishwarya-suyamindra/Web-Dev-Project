@@ -29,17 +29,17 @@ const WelcomePage = () => {
     //   }
     //   )
     //   .catch(error => console.error('Error fetching video data:', error));
-      // const wordList = ['apple', 'banana', 'orange', 'grape', 'kiwi'];
-      // const randomIndex = Math.floor(Math.random() * wordList.length);
-      // const searchText =  'apple';
-      // console.log(searchText)
-      // axios.get(`${BASE_REMOTE_URL}/searchBar/${searchText}`)
-      // .then(response => {
-      //   console.log(response.data)
-      //   setCustomVideoData(response.data)
-      // }
-      // )
-      // .catch(error => console.error('Error fetching video data:', error));
+    //   const wordList = ['apple', 'banana', 'orange', 'grape', 'kiwi','cucumber','watermelon'];
+    //   const randomIndex = Math.floor(Math.random() * wordList.length);
+    //   const searchText =  wordList[randomIndex];
+    //   console.log(searchText)
+    //   axios.get(`${BASE_REMOTE_URL}/searchBar/${searchText}`)
+    //   .then(response => {
+    //     console.log(response.data)
+    //     setCustomVideoData(response.data)
+    //   }
+    //   )
+    //   .catch(error => console.error('Error fetching video data:', error));
   }, []);
 
   const [showModal, setShowModal] = useState(false);

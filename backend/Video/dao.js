@@ -100,7 +100,7 @@ const videoDAO = () => {
                 throw new Error('Video not found');
               }
           
-              return deletedVideo;
+              return { success: true };
             } catch (error) {
               // Handle errors, log them, and throw if necessary
               console.error('Error deleting video metadata:', error);

@@ -145,7 +145,7 @@ const videoService = () => {
             }
         },
           
-              getSearchVideos: async(searchTerm) => {
+        getSearchVideos: async(searchTerm) => {
         const params = {
             part: 'snippet',
             q: searchTerm,
@@ -157,12 +157,14 @@ const videoService = () => {
           .then(({data, statusCode}) => {
             if (statusCode >= 200 && statusCode < 300) {
                 const videos = data.items;
+                console.log(videos)
                 videos.forEach((video) => {
                     const videoId = video.id.videoId
                     if (videoId) {
                         var obj = {
                             videoId: video.id.videoId,
                             title: video.snippet.title,
+                            thumbnail: video.snippet.thumbnails.default,
                             isUploadedVideo: false
                         }
                         res.push(obj)
