@@ -5,17 +5,18 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from 'react-router-dom';
 
 const UserProfile = () => {
   // State to store user information
   const currentUser = useSelector((state) => state.login.userDetails)
-  //const [user, setUser] = useState(currentUser)
   const isSignedIn = useSelector((state) => state.session.authenticated)
   const BASE_REMOTE_URL = process.env.REACT_APP_API_BASE || "http://localhost:3500"
   var { userId } = useParams()
   const [userData, setUserData] = useState({
     name: '',
     email: '',
+    phone: '',
     followers: [],
     following: []
   });
@@ -42,16 +43,28 @@ const UserProfile = () => {
   }, [userId]);
 
   // Function to handle form submission
-  const handleFormSubmit = event => {
+  const handleFormSubmit = async(event) => {
     event.preventDefault();
-
-    // updateUserInfo(userData);
+    const data = {fullName: userData.name, email: userData.email, phone: userData.phone}
+    console.log("!!",data)
+    await axios.put(`${BASE_REMOTE_URL}/profile`, data, {
+      headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer ' + currentUser.token
+  }})
+    .then(response => {
+      console.log("User updated successfully!")
+    })
+    .catch(error => {
+      console.log(error.response.data);
+    })
   };
 
   const handleFollow = async(event) => {
     const userIdToFollow = userId;
-    const data = {userId: currentUser.id, userIdToFollow: userId, username: userData.name}
-    await axios.post(`${BASE_REMOTE_URL}/followUser`, data)
+    const data = {userId: currentUser.userId, userIdToFollow: userId, username: userData.name}
+    console.log(data)
+    await axios.post(`${BASE_REMOTE_URL}/profile/followUser`, data)
     .then(response => {
       console.log("following!")
     })
@@ -106,27 +119,16 @@ const UserProfile = () => {
           </div> : <div></div>}
          
         </div>
-      }
+      }      
 
-      {/* List of Followers */}
       <h3 className='m-3'>Following</h3>
       <ListGroup className='m-3'>
-        {userData.following.map(follower => (
-          <ListGroup.Item key={follower.id}>
-            <a href={`/user/${follower.id}`}>{follower.name}</a>
+        {userData.following.map(followingUser => (
+          <ListGroup.Item key={followingUser.userId}>
+            {followingUser.name}
           </ListGroup.Item>
         ))}
       </ListGroup>
-
-      {/* List of Following */}
-      {/* <h3 className='mb-3'>Following</h3>
-      <ListGroup className='mb-3'>
-        {userData.following.map(followingUser => (
-          <ListGroup.Item key={followingUser.id}>
-            <a href={`/user/${followingUser.id}`}>{followingUser.name}</a>
-          </ListGroup.Item>
-        ))}
-      </ListGroup> */}
     </div>
   );
 };

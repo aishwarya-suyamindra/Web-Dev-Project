@@ -22,26 +22,26 @@ const WelcomePage = () => {
   const isSignedIn = useSelector((state) => state.session.authenticated)
   const isAdmin = user.role == 'admin' ? true : false;
   console.log(user)
-  useEffect(() => {
-    axios.get(`${BASE_REMOTE_URL}/trending`)
-      .then(response => {
-        console.log(response.data)
-        setVideoData(response.data)
-      }
-      )
-      .catch(error => console.error('Error fetching video data:', error));
-      const wordList = ['apple', 'banana', 'orange', 'grape', 'kiwi','cucumber','watermelon'];
-      const randomIndex = Math.floor(Math.random() * wordList.length);
-      const searchText =  wordList[randomIndex];
-      console.log(searchText)
-      axios.get(`${BASE_REMOTE_URL}/searchBar/${searchText}`)
-      .then(response => {
-        console.log(response.data)
-        setCustomVideoData(response.data)
-      }
-      )
-      .catch(error => console.error('Error fetching video data:', error));
-  }, []);
+  // useEffect(() => {
+  //   axios.get(`${BASE_REMOTE_URL}/trending`)
+  //     .then(response => {
+  //       console.log(response.data)
+  //       setVideoData(response.data)
+  //     }
+  //     )
+  //     .catch(error => console.error('Error fetching video data:', error));
+  //     const wordList = ['apple', 'banana', 'orange', 'grape', 'kiwi','cucumber','watermelon'];
+  //     const randomIndex = Math.floor(Math.random() * wordList.length);
+  //     const searchText =  wordList[randomIndex];
+  //     console.log(searchText)
+  //     axios.get(`${BASE_REMOTE_URL}/searchBar/${searchText}`)
+  //     .then(response => {
+  //       console.log(response.data)
+  //       setCustomVideoData(response.data)
+  //     }
+  //     )
+  //     .catch(error => console.error('Error fetching video data:', error));
+  // }, []);
 
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
@@ -98,7 +98,7 @@ const WelcomePage = () => {
               </div>
 
           }
-          {isAdmin ?
+          {isAdmin && isSignedIn ?
             <div className="cta-buttons">
 
               <Button variant="success" className="me-2" onClick={() => setShowModal2(true)}>

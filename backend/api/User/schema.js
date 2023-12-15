@@ -18,6 +18,10 @@ var UserSchema = new mongoose.Schema({
     trim: true,
     required: true
   },
+  phone: {
+    type: String,
+    trim: true,
+  },
   hash_password: {
     type: String
   },
