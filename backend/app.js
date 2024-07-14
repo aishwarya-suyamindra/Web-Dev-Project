@@ -19,7 +19,7 @@ const sessionOptions = {
     session(sessionOptions)
   );  
 
-const config = dotenv.config({path: 'backend/.env'})
+const config = dotenv.config({path: '.env'})
 
 if (config.error) {
     console.log(config.error)

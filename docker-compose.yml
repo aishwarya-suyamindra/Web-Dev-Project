@@ -1,0 +1,24 @@
+# docker compose version
+version: "3.8"
+# Build server, client image and run containers
+services:
+  server:
+    image: backend
+    build: ./backend
+    container_name: video_server
+    ports:
+      - "3500:3500"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+  client:
+    image: frontend
+    build: ./frontend
+    container_name: video_client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
